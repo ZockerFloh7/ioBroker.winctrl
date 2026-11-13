@@ -1,261 +1,319 @@
 'use strict';
 
-/*
- * Created with @iobroker/create-adapter v3.1.2
- */
-
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
 const utils = require('@iobroker/adapter-core');
-
-// Load your modules here, e.g.:
-// const fs = require('fs');
+const REQUEST_TIMEOUT_MS = 600000;
+const HEARTBEAT_MS = 30000;
 
 class Winctrl extends utils.Adapter {
-    /**
-     * @param {Partial<utils.AdapterOptions>} [options] - Adapter options
-     */
     constructor(options) {
-        super({
-            ...options,
-            name: 'winctrl',
-        });
+        super({ ...options, name: 'winctrl' });
+        this.stopping = false;
+        this.busy = false;
+        this.pinging = false;
+        this.controllers = new Set();
+        this.heartbeat = null;
         this.on('ready', this.onReady.bind(this));
         this.on('stateChange', this.onStateChange.bind(this));
-        // this.on('objectChange', this.onObjectChange.bind(this));
-        // this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
     }
 
-    /**
-     * Is called when databases are connected and adapter received configuration.
-     */
     async onReady() {
-        // Initialize your adapter here
-        this.log.info('WinCtrl adapter started!');
-
-        // Reset the connection indicator during startup
-        //this.setState('info.connection', false, true);
-
-        // The adapters config (in the instance object everything under the attribute "native") is accessible via
-        // this.config:
-        //this.createHttpServer();
-        const clientIp = this.config.clientIp || '127.0.0.1';
-        this.log.info(`Client IP:${clientIp}`);
-        const port = this.config.port || '8085';
-        this.log.info(`Client IP: ${port}`);
-        /*
-		For every state in the system there has to be also an object of type state
-		Here a simple template for a boolean variable named "testVariable"
-		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-
-		IMPORTANT: State roles should be chosen carefully based on the state's purpose.
-		           Please refer to the state roles documentation for guidance:
-		           https://www.iobroker.net/#en/documentation/dev/stateroles.md
-		*/
-        await this.setObjectNotExistsAsync('command', {
-            type: 'state',
-            common: {
-                name: 'command',
+        const states = {
+            command: {
+                name: 'Befehl / Trigger',
                 type: 'string',
-                role: 'value',
+                role: 'text',
                 read: true,
                 write: true,
+                def: '',
+                desc: 'netflix oder /netflix, auch Pfade wie media/pause',
             },
-            native: {},
-        });
-
-        await this.setObjectNotExistsAsync('response', {
-            type: 'state',
-            common: {
-                name: 'status',
-                type: 'string',
-                role: 'value',
-                read: true,
-                write: false,
-            },
-            native: {},
-        });
-
-        await this.setObjectNotExistsAsync('status', {
-            type: 'state',
-            common: {
-                name: 'status',
+            status: {
+                name: 'Ausführungsstatus',
                 type: 'number',
                 role: 'value',
                 read: true,
                 write: false,
                 min: 0,
-                max: 599,
+                max: 2,
+                def: 0,
+                states: { 0: 'failed', 1: 'running', 2: 'success' },
             },
-            native: {},
-        });
-
-        // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-        this.subscribeStates('command');
-        // You can also add a subscription for multiple states. The following line watches all states starting with "lights."
-        // this.subscribeStates('lights.*');
-        // Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
-        // this.subscribeStates('*');
-
-        /*
-			setState examples
-			you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-        // the variable testVariable is set to true as command (ack=false)
-        //await this.setState('testVariable', true);
-
-        // same thing, but the value is flagged "ack"
-        // ack should be always set to true if the value is received from or acknowledged from the target system
-        //await this.setState('testVariable', { val: true, ack: true });
-
-        // same thing, but the state is deleted after 30s (getState will return null afterwards)
-        //await this.setState('testVariable', { val: true, ack: true, expire: 30 });
-
-        // examples for the checkPassword/checkGroup functions
-        /*const pwdResult = await this.checkPasswordAsync('admin', 'iobroker');
-        this.log.info(`check user admin pw iobroker: ${pwdResult}`);
-
-        const groupResult = await this.checkGroupAsync('admin', 'admin');
-        this.log.info(`check group user admin group admin: ${groupResult}`);*/
-    }
-
-    async httpGet(url) {
-        try {
-            const response = await fetch(url);
-            const status = response.status;
-            const data = await response.text();
-            return { status, data };
-        } catch (error) {
-            throw new Error(`HTTP Fehler: ${error.message}`);
+            response: {
+                name: 'Antwort / Rückgabewert',
+                type: 'string',
+                role: 'text',
+                read: true,
+                write: false,
+                def: '',
+            },
+            httpStatus: {
+                name: 'HTTP-Statuscode (0 = keine Antwort)',
+                type: 'number',
+                role: 'value',
+                read: true,
+                write: false,
+                def: 0,
+            },
+            lastError: {
+                name: 'Letzter Ausführungsfehler',
+                type: 'string',
+                role: 'text',
+                read: true,
+                write: false,
+                def: '',
+            },
+            lastCommand: {
+                name: 'Zuletzt gesendeter Trigger',
+                type: 'string',
+                role: 'text',
+                read: true,
+                write: false,
+                def: '',
+            },
+            'info.connection': {
+                name: 'WinCtrl erreichbar und authentifiziert',
+                type: 'boolean',
+                role: 'indicator.connected',
+                read: true,
+                write: false,
+                def: false,
+            },
+        };
+        await this.setObjectNotExistsAsync('info', { type: 'channel', common: { name: 'Verbindung' }, native: {} });
+        // Update existing metadata as well: older status objects stored HTTP codes.
+        for (const [id, common] of Object.entries(states)) {
+            await this.extendObjectAsync(id, { type: 'state', common, native: {} });
         }
+        await this.setStateAsync('info.connection', { val: false, ack: true });
+        const previous = await this.getStateAsync('status');
+        if (previous && previous.val === 1) {
+            await this.writeResult(
+                0,
+                'Adapter neu gestartet; Ergebnis des vorherigen Laufs unbekannt.',
+                0,
+                'Vorheriger Lauf wurde nicht bis zum Ende beobachtet.',
+            );
+        }
+        try {
+            this.baseUrl = makeBaseUrl(this.config.clientIp, this.config.port);
+            if (!String(this.config.token || '').trim()) {
+                throw new Error('Token fehlt in den Instanzeinstellungen.');
+            }
+        } catch (error) {
+            this.log.error(error.message);
+            await this.setStateAsync('lastError', { val: error.message, ack: true });
+            return;
+        }
+        await this.subscribeStatesAsync('command');
+        await this.checkConnection();
+        this.heartbeat = this.setInterval(() => {
+            void this.checkConnection().catch(error => this.log.debug(`Heartbeat: ${error.message}`));
+        }, HEARTBEAT_MS);
     }
 
-    createHttpServer() {
-        const http = require('http');
-        const url = require('url');
-
-        this.server = http.createServer(async (req, res) => {
-            const parsedUrl = url.parse(req.url || '/', true);
-            const pathname = parsedUrl.pathname;
-
-            res.setHeader('Content-Type', 'application/json');
-            res.setHeader('Access-Control-Allow-Origin', '*');
-
-            // GET /status
-            if (req.method === 'GET' && pathname === '/status') {
-                res.statusCode = 200;
-                res.end(
-                    JSON.stringify({
-                        status: 'ok',
-                        uptime: process.uptime(),
-                        clientip: this.config.clientIp,
-                    }),
+    async request(path, timeoutMs) {
+        const controller = new AbortController();
+        this.controllers.add(controller);
+        const timer = this.setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const url = new URL(this.baseUrl);
+            url.pathname = path;
+            const res = await fetch(url, {
+                method: 'GET',
+                redirect: 'error',
+                signal: controller.signal,
+                headers: { Authorization: `Bearer ${this.config.token}`, Accept: 'application/json' },
+            });
+            // Timer deliberately remains active while reading the body.
+            const text = await res.text();
+            let data = null;
+            try {
+                data = JSON.parse(text);
+            } catch {
+                /* handled by caller */
+            }
+            return { code: res.status, data, text };
+        } catch (error) {
+            if (controller.signal.aborted) {
+                throw new Error(
+                    this.stopping
+                        ? 'Adapter wird beendet.'
+                        : `Anfragezeitlimit nach ${timeoutMs / 1000} Sekunden erreicht; Windows-Ausführung möglicherweise noch aktiv.`,
                 );
-                // GET /ping
-            } else if (req.method === 'GET' && pathname === '/ping') {
-                res.statusCode = 200;
-                res.end('pong');
-
-                // Unbekannt
-            } else {
-                res.statusCode = 404;
-                res.end(JSON.stringify({ error: 'command not found' }));
             }
-        });
-
-        const port = this.config.port || 8085;
-        this.server.listen({ port: port, host: '0.0.0.0' }, () => {
-            this.log.info(`HTTP Server listening on port ${port}`);
-        });
+            // Do not log URL/config/headers or nested errors containing credentials.
+            throw new Error(`WinCtrl-Anfrage fehlgeschlagen (${error.code || error.name || 'Netzwerkfehler'}).`);
+        } finally {
+            this.clearTimeout(timer);
+            this.controllers.delete(controller);
+        }
     }
 
-    /**
-     * Is called when adapter shuts down - callback has to be called under any circumstances!
-     *
-     * @param {() => void} callback - Callback function
-     */
-    onUnload(callback) {
+    async checkConnection() {
+        if (this.stopping || this.pinging || this.busy || !this.baseUrl) {
+            return;
+        }
+        this.pinging = true;
         try {
-            // Here you must clear all timeouts or intervals that may still be active
-            if (this.server) {
-                this.server.close();
+            const res = await this.request('/ping', 4000);
+            if (!this.stopping && !this.busy) {
+                await this.setStateAsync('info.connection', { val: isWinCtrlPing(res), ack: true });
             }
-
-            callback();
-        } catch (error) {
-            this.log.error(`Error during unloading: ${error.message}`);
-            callback();
+        } catch {
+            if (!this.stopping && !this.busy) {
+                await this.setStateAsync('info.connection', { val: false, ack: true });
+            }
+        } finally {
+            this.pinging = false;
         }
     }
 
-    // If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-    // You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-    // /**
-    //  * Is called if a subscribed object changes
-    //  * @param {string} id
-    //  * @param {ioBroker.Object | null | undefined} obj
-    //  */
-    /*onObjectChange(id, obj) {
-        if (obj) {
-            // The object was changed
-            this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-        }
-    }*/
+    async writeResult(status, response, httpCode, error) {
+        await Promise.all([
+            this.setStateAsync('status', { val: status, ack: true }),
+            this.setStateAsync('response', { val: response, ack: true }),
+            this.setStateAsync('httpStatus', { val: httpCode, ack: true }),
+            this.setStateAsync('lastError', { val: error || '', ack: true }),
+        ]);
+    }
 
-    /**
-     * Is called if a subscribed state changes
-     *
-     * @param {string} id - State ID
-     * @param {ioBroker.State | null | undefined} state - State object
-     */
     async onStateChange(id, state) {
-        if (state) {
-            // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-
-            if (state.ack === false) {
-                // This is a command from the user (e.g., from the UI or other adapter)
-                // and should be processed by the adapter
-                this.log.info(`User command received for ${id}: ${state.val}`);
-
-                const targetUrl = `http://${this.config.clientIp}:${this.config.port}/${state.val}`;
-                const result = await this.httpGet(targetUrl);
-                this.setState('response', result.data || 'error', true);
-                this.setState('status', result.status || 'error', true);
-                this.log.info(`Response HTTP status ${result.status}: ${result.data}`);
+        if (this.stopping || !state || state.ack || id !== `${this.namespace}.command`) {
+            return;
+        }
+        if (this.busy) {
+            this.log.warn('Weiterer Befehl nicht ausgeführt: Der vorherige Auftrag läuft noch.');
+            return;
+        }
+        this.busy = true;
+        try {
+            const trigger = normalizeTrigger(state.val);
+            await Promise.all([
+                this.setStateAsync('status', { val: 1, ack: true }),
+                this.setStateAsync('response', { val: '', ack: true }),
+                this.setStateAsync('lastError', { val: '', ack: true }),
+                this.setStateAsync('httpStatus', { val: 0, ack: true }),
+                this.setStateAsync('lastCommand', { val: trigger, ack: true }),
+            ]);
+            const res = await this.request(trigger, REQUEST_TIMEOUT_MS);
+            if (this.stopping) {
+                return;
             }
-        } else {
-            // The object was deleted or the state value has expired
-            this.log.info(`state ${id} deleted`);
+            const data = res.data;
+            if (res.code === 401 || res.code === 403) {
+                await this.setStateAsync('info.connection', { val: false, ack: true });
+                await this.writeResult(0, 'Token wurde abgewiesen.', res.code, 'Authentifizierung fehlgeschlagen.');
+            } else if (data && [0, 1, 2].includes(data.status)) {
+                await this.setStateAsync('info.connection', { val: true, ack: true });
+                const result = interpretResponse(res);
+                await this.writeResult(result.status, result.response, res.code, result.error);
+            } else {
+                await this.writeResult(
+                    0,
+                    'Ungültige WinCtrl-Antwort (JSON erwartet).',
+                    res.code,
+                    'Keine gültige Statusantwort erhalten. Windows-App und Token prüfen.',
+                );
+                await this.setStateAsync('info.connection', { val: false, ack: true });
+            }
+        } catch (error) {
+            if (this.stopping) {
+                return;
+            }
+            await this.writeResult(0, error.message, 0, error.message);
+            await this.setStateAsync('info.connection', { val: false, ack: true });
+            this.log.warn(error.message);
+        } finally {
+            // Confirm only if no newer command was written in the meantime.
+            if (!this.stopping) {
+                try {
+                    const latest = await this.getStateAsync('command');
+                    if (latest && !latest.ack && latest.ts === state.ts && latest.val === state.val) {
+                        await this.setStateAsync('command', { val: state.val, ack: true });
+                    }
+                } catch (error) {
+                    this.log.debug(`Quittierung: ${error.message}`);
+                }
+            }
+            this.busy = false;
         }
     }
-    // If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-    // /**
-    //  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-    //  * Using this method requires "common.messagebox" property to be set to true in io-package.json
-    //  * @param {ioBroker.Message} obj
-    //  */
-    // onMessage(obj) {
-    //     if (typeof obj === 'object' && obj.message) {
-    //         if (obj.command === 'send') {
-    //             // e.g. send email or pushover or whatever
-    //             this.log.info('send command');
 
-    //             // Send response in callback if required
-    //             if (obj.callback) this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-    //         }
-    //     }
-    // }
+    onUnload(callback) {
+        this.stopping = true;
+        if (this.heartbeat) {
+            this.clearInterval(this.heartbeat);
+        }
+        for (const controller of this.controllers) {
+            controller.abort();
+        }
+        this.setState('info.connection', { val: false, ack: true }, () => callback());
+    }
+}
+
+function makeBaseUrl(hostValue, portValue) {
+    const host = String(hostValue || '').trim();
+    const port = Number(portValue || 8085);
+    if (!host || /[\s/?#@]/.test(host) || host.includes('://')) {
+        throw new Error('Nur Hostname/IP ohne http:// und ohne Pfad eingeben.');
+    }
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+        throw new Error('Port muss zwischen 1 und 65535 liegen.');
+    }
+    const formatted = host.includes(':') && !host.startsWith('[') ? `[${host}]` : host;
+    return new URL(`http://${formatted}:${port}/`).toString();
+}
+
+function normalizeTrigger(value) {
+    const path = `/${String(value ?? '')
+        .trim()
+        .replace(/^\/+/, '')}`;
+    if (!/^\/[A-Za-z0-9_/-]+$/.test(path)) {
+        throw new Error('Ungültiger Trigger; z.B. netflix oder /media/pause verwenden.');
+    }
+    if (path === '/ping') {
+        throw new Error('/ping ist für Verbindungsprüfung reserviert und kein Skripttrigger.');
+    }
+    return path;
+}
+
+function isWinCtrlPing(res) {
+    const d = res.data;
+    if (!d || res.code === 401 || res.code === 403) {
+        return false;
+    }
+    if (res.code === 200 && (d.response === 'pong' || d.status_text === 'pong' || d.service === 'winctrl')) {
+        return true;
+    }
+    // Compatibility with the last Windows package lacking a built-in /ping route.
+    // Not ANY 404: only the exact WinCtrl JSON error with the configured token.
+    return (
+        res.code === 404 &&
+        d.status === 0 &&
+        d.status_text === 'failed' &&
+        d.error === 'Not Found' &&
+        d.response === 'Unbekannte oder deaktivierte Aktion'
+    );
+}
+
+function interpretResponse(res) {
+    const d = res.data;
+    const success = res.code >= 200 && res.code < 300 && d.status === 2;
+    const response = String(d.return_value ?? d.response ?? '');
+    if (success) {
+        return { status: 2, response, error: '' };
+    }
+    const error =
+        res.code === 409 || d.status === 1
+            ? 'Windows führt bereits eine andere Aktion aus; dieser Auftrag wurde nicht gestartet.'
+            : String(d.error || d.response || `HTTP ${res.code}`);
+    return { status: 0, response: error, error };
 }
 
 if (require.main !== module) {
-    // Export the constructor in compact mode
-    /**
-     * @param {Partial<utils.AdapterOptions>} [options] - Adapter options
-     */
     module.exports = options => new Winctrl(options);
+    module.exports.helpers = { makeBaseUrl, normalizeTrigger, isWinCtrlPing, interpretResponse };
 } else {
-    // otherwise start the instance directly
     new Winctrl();
 }

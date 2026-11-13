@@ -16,3 +16,17 @@ Thumbs.db
 # i18n intermediate files
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
+
+# Local files and previous update artifacts
+node_modules/
+*.bak
+*.tgz
+*.log
+*.update-tmp
+.env
+.env.*
+coverage/
+.nyc_output/
+/install-update.js
+/LIESMICH.md
+/TEST_REPORT.txt

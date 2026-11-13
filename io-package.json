@@ -1,58 +1,81 @@
 {
-    "common": {
-        "name": "winctrl",
-        "version": "0.0.1",
-        "news": {
-            "0.0.1": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung"
-            }
-        },
-        "titleLang": {
-            "en": "winCtrl",
-            "de": "winCtrl"
-        },
-        "desc": {
-            "en": "winctrl",
-            "de": "winctrl"
-        },
-        "authors": ["ZockerFloh7 <florian.hoeflmeir@web.de>"],
-        "keywords": ["template", "automation", "IoT", "integration"],
-        "licenseInformation": {
-            "type": "free",
-            "license": "MIT"
-        },
-        "platform": "Javascript/Node.js",
-        "icon": "winctrl.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/ZockerFloh7/ioBroker.winctrl/main/admin/winctrl.png",
-        "readme": "https://github.com/ZockerFloh7/ioBroker.winctrl/blob/main/README.md",
-        "loglevel": "info",
-        "tier": 3,
-        "mode": "daemon",
-        "type": "utility",
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "adminUI": {
-            "config": "json",
-            "tab": "materialize"
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=6.0.11"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=7.0.23"
-            }
-        ]
+  "common": {
+    "name": "winctrl",
+    "version": "0.0.3",
+    "news": {
+      "0.0.3": {
+        "en": "Token, execution status, return values and connection monitoring",
+        "de": "Token, Ausführungsstatus, Rückgabewerte und Verbindungsprüfung"
+      }
     },
-    "native": {
-        "clientIp": "127.0.0.1",
-        "port": 8085
+    "desc": {
+      "en": "Control Windows desktop via WinCtrl HTTP server",
+      "de": "Windows Desktop über WinCtrl HTTP-Server fernsteuern"
     },
-    "objects": [],
-    "instanceObjects": []
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "winctrl.png",
+    "enabled": true,
+    "keywords": [
+      "windows",
+      "control",
+      "automation"
+    ],
+    "readme": "https://github.com/ZockerFloh7/ioBroker.winctrl/blob/main/README.md",
+    "loglevel": "info",
+    "type": "general",
+    "materialize": true,
+    "adminUI": {
+      "config": "json"
+    },
+    "titleLang": {
+      "en": "Windows Control",
+      "de": "Windows Control"
+    },
+    "authors": [
+      "ZockerFloh7"
+    ],
+    "extIcon": "https://raw.githubusercontent.com/ZockerFloh7/ioBroker.winctrl/main/admin/winctrl.png",
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "tier": 3,
+    "connectionType": "local",
+    "dataSource": "poll"
+  },
+  "native": {
+    "clientIp": "",
+    "port": 8085,
+    "token": ""
+  },
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Geräteverbindung zum Windows PC",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ],
+  "protectedNative": [
+    "token"
+  ],
+  "encryptedNative": [
+    "token"
+  ]
 }
