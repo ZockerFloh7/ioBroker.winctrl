@@ -13,16 +13,11 @@ Version 0.0.3 is currently being prepared for public testing.
 The existence of this repository does not imply that the adapter is already available
 in the official ioBroker adapter repository.
 
-**Publication prerequisite:** A public download/source link and installation instructions
-for the compatible Windows companion must be added before publishing this adapter.
-The companion is not included in the npm package. No compatible companion release
-version has been declared yet.
-
 ## Requirements
 
 - Node.js 22.19.0 or newer, as declared by this adapter's package.json.
 - An ioBroker installation compatible with the adapter's dependencies.
-- A Windows PC running the compatible WinCtrl companion application.
+- Download the Windows companion application: [WinCtrl Companion v0.0.3](https://github.com/ZockerFloh7/winctrl-companion/releases/tag/v0.0.3).
 - Network access from the ioBroker host to the Windows command-server port.
 - A configured command-server token.
 
