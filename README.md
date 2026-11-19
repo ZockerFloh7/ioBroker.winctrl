@@ -175,6 +175,8 @@ See the repository's issue tracker for bug reports. Never include tokens in repo
 - Connection monitoring and separate HTTP/error diagnostic data points.
 - Fixed execution-request timeout and basic automated checks.
 
+Older entries can be found in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
+
 ## License
 
 MIT License
