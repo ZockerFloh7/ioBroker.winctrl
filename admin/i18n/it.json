@@ -1,5 +1,10 @@
 {
-    "winctrl adapter settings": "Impostazioni dell'adattatore per winctrl",
-    "option1": "opzione1",
-    "option2": "opzione2"
+    "winctrl_intro":  "Esegui comandi e ricevi i valori restituiti da Blockly. Timeout delle richieste di rete: 10 minuti fissi.",
+    "clientIp_label":  "PC Windows · Indirizzo IP o nome host",
+    "clientIp_help":  "Ad esempio 192.168.1.50 — senza http://",
+    "winctrl_note":  "Controllo della connessione ogni 30 secondi. Verde quando la raggiungibilità è confermata, altrimenti giallo. Usa HTTP solo in una LAN/VPN affidabile.",
+    "port_label":  "Porta",
+    "token_help":  "Esattamente il token configurato nelle impostazioni di Windows, senza un hash aggiuntivo calcolato.",
+    "winctrl_heading":  "WinCtrl · Connessione Windows",
+    "token_label":  "Token WinCtrl"
 }

@@ -1,5 +1,10 @@
 {
-    "winctrl adapter settings": "winctrl的适配器设置",
-    "option1": "选项1",
-    "option2": "选项2"
+    "winctrl_intro":  "执行命令并接收 Blockly 返回值。网络请求超时：固定 10 分钟。",
+    "clientIp_label":  "Windows 电脑 · IP 地址或主机名",
+    "clientIp_help":  "例如 192.168.1.50 — 不含 http://",
+    "winctrl_note":  "每 30 秒进行一次连接检查。确认可访问时为绿色，否则为黄色。请仅在可信的局域网/VPN 中使用 HTTP。",
+    "port_label":  "端口",
+    "token_help":  "与 Windows 设置中配置的令牌完全一致，而非额外计算的哈希值。",
+    "winctrl_heading":  "WinCtrl · Windows 连接",
+    "token_label":  "WinCtrl 令牌"
 }

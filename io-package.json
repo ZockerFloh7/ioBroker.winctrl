@@ -5,12 +5,30 @@
     "news": {
       "0.0.3": {
         "en": "Token, execution status, return values and connection monitoring",
-        "de": "Token, Ausführungsstatus, Rückgabewerte und Verbindungsprüfung"
+        "de": "Token, Ausführungsstatus, Rückgabewerte und Verbindungsprüfung",
+        "ru": "Токен, статус выполнения, возвращаемые значения и мониторинг подключения",
+        "pt": "Token, estado de execução, valores de retorno e monitorização da ligação",
+        "nl": "Token, uitvoeringsstatus, retourwaarden en verbindingsmonitoring",
+        "fr": "Jeton, état d''exécution, valeurs de retour et surveillance de la connexion",
+        "it": "Token, stato di esecuzione, valori restituiti e monitoraggio della connessione",
+        "es": "Token, estado de ejecución, valores devueltos y supervisión de la conexión",
+        "pl": "Token, status wykonywania, wartości zwracane i monitorowanie połączenia",
+        "uk": "Токен, статус виконання, значення, що повертаються, та моніторинг з''єднання",
+        "zh-cn": "令牌、执行状态、返回值和连接监控"
       }
     },
     "desc": {
-      "en": "Control Windows desktop via WinCtrl HTTP server",
-      "de": "Windows Desktop über WinCtrl HTTP-Server fernsteuern"
+      "en": "Controls Windows desktop functions through the WinCtrl HTTP companion application.",
+      "de": "Steuert Windows-Desktop-Funktionen über die WinCtrl-HTTP-Companion-Anwendung.",
+      "ru": "Управляет функциями рабочего стола Windows через HTTP-приложение WinCtrl.",
+      "pt": "Controla funções do ambiente de trabalho Windows através da aplicação complementar HTTP WinCtrl.",
+      "nl": "Bedient Windows-bureaubladfuncties via de WinCtrl HTTP-companiontoepassing.",
+      "fr": "Contrôle les fonctions du bureau Windows via l''application compagnon HTTP WinCtrl.",
+      "it": "Controlla le funzioni del desktop Windows tramite l''applicazione companion HTTP WinCtrl.",
+      "es": "Controla funciones del escritorio de Windows mediante la aplicación complementaria HTTP WinCtrl.",
+      "pl": "Steruje funkcjami pulpitu systemu Windows za pomocą aplikacji towarzyszącej WinCtrl HTTP.",
+      "uk": "Керує функціями робочого столу Windows через HTTP-додаток WinCtrl.",
+      "zh-cn": "通过 WinCtrl HTTP 配套应用控制 Windows 桌面功能。"
     },
     "platform": "Javascript/Node.js",
     "mode": "daemon",
@@ -23,17 +41,25 @@
     ],
     "readme": "https://github.com/ZockerFloh7/ioBroker.winctrl/blob/main/README.md",
     "loglevel": "info",
-    "type": "general",
-    "materialize": true,
+    "type": "utility",
     "adminUI": {
       "config": "json"
     },
     "titleLang": {
       "en": "Windows Control",
-      "de": "Windows Control"
+      "de": "Windows-Steuerung",
+      "ru": "Управление Windows",
+      "pt": "Controlo do Windows",
+      "nl": "Windows-bediening",
+      "fr": "Contrôle Windows",
+      "it": "Controllo Windows",
+      "es": "Control de Windows",
+      "pl": "Sterowanie systemem Windows",
+      "uk": "Керування Windows",
+      "zh-cn": "Windows 控制"
     },
     "authors": [
-      "ZockerFloh7"
+      "ZockerFloh7 <zockerfloh7@posteo.de>"
     ],
     "extIcon": "https://raw.githubusercontent.com/ZockerFloh7/ioBroker.winctrl/main/admin/winctrl.png",
     "licenseInformation": {
@@ -42,7 +68,18 @@
     },
     "tier": 3,
     "connectionType": "local",
-    "dataSource": "poll"
+    "dataSource": "poll",
+    "compact": false,
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.6.17"
+      }
+    ]
   },
   "native": {
     "clientIp": "",
@@ -63,7 +100,7 @@
       "type": "state",
       "common": {
         "role": "indicator.connected",
-        "name": "Geräteverbindung zum Windows PC",
+        "name": "Device connection to Windows PC",
         "type": "boolean",
         "read": true,
         "write": false,

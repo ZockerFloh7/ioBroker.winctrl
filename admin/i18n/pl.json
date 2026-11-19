@@ -1,5 +1,10 @@
 {
-    "winctrl adapter settings": "Ustawienia adaptera dla winctrl",
-    "option1": "opcja 1",
-    "option2": "opcja 2"
+    "winctrl_intro":  "Wykonuj polecenia i otrzymuj wartości zwracane przez Blockly. Limit czasu żądania sieciowego: stałe 10 minut.",
+    "clientIp_label":  "Komputer z systemem Windows · Adres IP lub nazwa hosta",
+    "clientIp_help":  "Na przykład 192.168.1.50 — bez http://",
+    "winctrl_note":  "Sprawdzanie połączenia co 30 sekund. Zielony, gdy dostępność została potwierdzona, w przeciwnym razie żółty. Używaj HTTP tylko w zaufanej sieci LAN/VPN.",
+    "port_label":  "Port",
+    "token_help":  "Dokładnie token skonfigurowany w ustawieniach systemu Windows, bez dodatkowo obliczonego skrótu.",
+    "winctrl_heading":  "WinCtrl · Połączenie z systemem Windows",
+    "token_label":  "Token WinCtrl"
 }

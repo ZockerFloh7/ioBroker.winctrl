@@ -3,22 +3,24 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: monthly
-      day: 25
-      time: "00:05"
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
+      interval: cron
+      cron: "17 3 * * 1"
+    open-pull-requests-limit: 15
     assignees:
       - ZockerFloh7
     versioning-strategy: increase
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
-      day: 25
-      time: "00:05"
-      timezone: Europe/Berlin
-    open-pull-requests-limit: 5
+      interval: cron
+      cron: "43 4 * * 1"
+    open-pull-requests-limit: 15
     assignees:
       - ZockerFloh7

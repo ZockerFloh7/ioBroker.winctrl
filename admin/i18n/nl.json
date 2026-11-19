@@ -1,5 +1,10 @@
 {
-    "winctrl adapter settings": "Adapterinstellingen voor winctrl",
-    "option1": "optie1",
-    "option2": "optie2"
+    "winctrl_intro":  "Voer opdrachten uit en ontvang Blockly-retourwaarden. Time-out voor netwerkverzoeken: vast 10 minuten.",
+    "clientIp_label":  "Windows-pc · IP-adres of hostnaam",
+    "clientIp_help":  "Bijvoorbeeld 192.168.1.50 — zonder http://",
+    "winctrl_note":  "Verbindingscontrole elke 30 seconden. Groen wanneer bereikbaarheid is bevestigd, anders geel. Gebruik HTTP alleen in een vertrouwd LAN/VPN.",
+    "port_label":  "Poort",
+    "token_help":  "Precies het token dat in de Windows-instellingen is geconfigureerd, zonder extra berekende hash.",
+    "winctrl_heading":  "WinCtrl · Windows-verbinding",
+    "token_label":  "WinCtrl-token"
 }

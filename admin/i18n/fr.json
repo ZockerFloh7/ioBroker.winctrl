@@ -1,5 +1,10 @@
 {
-    "winctrl adapter settings": "Paramètres d'adaptateur pour winctrl",
-    "option1": "option1",
-    "option2": "option2"
+    "winctrl_intro":  "Exécutez des commandes et recevez les valeurs retournées par Blockly. Délai d\u0027attente des requêtes réseau : 10 minutes fixes.",
+    "clientIp_label":  "PC Windows · Adresse IP ou nom d\u0027hôte",
+    "clientIp_help":  "Par exemple 192.168.1.50 — sans http://",
+    "winctrl_note":  "Vérification de connexion toutes les 30 secondes. Vert lorsque l\u0027accessibilité est confirmée, sinon jaune. Utilisez HTTP uniquement dans un LAN/VPN de confiance.",
+    "port_label":  "Port",
+    "token_help":  "Exactement le jeton configuré dans les paramètres Windows, sans hachage supplémentaire calculé.",
+    "winctrl_heading":  "WinCtrl · Connexion Windows",
+    "token_label":  "Jeton WinCtrl"
 }

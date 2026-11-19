@@ -1,5 +1,10 @@
 {
-    "winctrl adapter settings": "Adaptereinstellungen für winctrl",
-    "option1": "Option1",
-    "option2": "Option2"
+    "winctrl_intro":  "Befehle ausführen und Blockly-Rückgabewerte empfangen. Netzwerk-Anfragezeitlimit: fest 10 Minuten.",
+    "clientIp_label":  "Windows-PC · IP-Adresse oder Hostname",
+    "clientIp_help":  "Zum Beispiel 192.168.1.50 — ohne http://",
+    "winctrl_note":  "Verbindungsprüfung alle 30 Sekunden. Grün bei bestätigter Erreichbarkeit, sonst Gelb. HTTP nur im vertrauenswürdigen LAN/VPN verwenden.",
+    "port_label":  "Port",
+    "token_help":  "Exakt das Token aus den Windows-Einstellungen, kein zusätzlich berechneter Hash.",
+    "winctrl_heading":  "WinCtrl · Windows-Verbindung",
+    "token_label":  "WinCtrl-Token"
 }

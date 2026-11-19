@@ -9,15 +9,13 @@ control a window, send keyboard input or operate a media player.
 
 ## Project status
 
-Version 0.0.3 is currently being prepared for public testing.
-The existence of this repository does not imply that the adapter is already available
-in the official ioBroker adapter repository.
+Version 0.0.3 is a public test release.
 
 ## Requirements
 
 - Node.js 22.19.0 or newer, as declared by this adapter's package.json.
 - An ioBroker installation compatible with the adapter's dependencies.
-- Download the Windows companion application: [WinCtrl Companion v0.0.3](https://github.com/ZockerFloh7/winctrl-companion/releases/tag/v0.0.3).
+- Download the Windows companion application: [WinCtrl Companion v0.0.3](https://github.com/ZockerFloh7/winctrl-companion/releases/download/v0.0.3/WinCtrl-0.0.3-windows-x64.exe).
 - Network access from the ioBroker host to the Windows command-server port.
 - A configured command-server token.
 
@@ -49,7 +47,6 @@ For a locally built development package:
 3. Open the adapter instance settings and configure the connection.
 
 Do not install the Windows application's update ZIP as an ioBroker adapter package.
-Official repository installation instructions will be added when the adapter is listed.
 
 ## Instance settings
 
@@ -144,7 +141,7 @@ an authenticated WinCtrl response was received.
 
 | Symptom | Check |
 | --- | --- |
-| Token fehlt in den Instanzeinstellungen | Enter and save the companion token in the adapter settings. |
+| Token missing in instance settings | Enter and save the companion token in the adapter settings. |
 | HTTP 401 or 403 | Check both the token and the Windows companion's IP whitelist. The current adapter uses a generic authentication message for these response codes. |
 | Unknown or disabled action | Check the trigger spelling and whether the Windows action is enabled. |
 | HTTP 409 | Another Windows action is running; the new action was not started. |
@@ -165,14 +162,13 @@ npm run test:integration
 npm test runs helper unit tests and package-file validation. The integration test currently
 uses JS-Controller 7.2.5 and checks basic adapter startup. With an empty default token,
 startup logs a configuration error and skips HTTP initialization; this smoke test does
-not validate successful command execution. A simulated HTTP integration test remains
-an outstanding publication-preparation task.
+not validate successful command execution.
 
 See the repository's issue tracker for bug reports. Never include tokens in reports.
 
 ## Changelog
 
-### 0.0.3 — public test release preparation
+### 0.0.3 — public test release
 
 - Token-authenticated HTTP action requests.
 - Execution status and returned values.
@@ -181,4 +177,8 @@ See the repository's issue tracker for bug reports. Never include tokens in repo
 
 ## License
 
-MIT. See LICENSE for the copyright notice and license terms.
+MIT License
+
+Copyright (c) 2026 ZockerFloh7 <zockerfloh7@posteo.de>
+
+See [LICENSE](LICENSE) for the full license text.

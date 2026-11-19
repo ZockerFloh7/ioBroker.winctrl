@@ -3,7 +3,8 @@
   "version": "0.0.3",
   "description": "Control Windows PCs through a local WinCtrl companion application",
   "author": {
-    "name": "ZockerFloh7"
+    "name": "ZockerFloh7",
+    "email": "zockerfloh7@posteo.de"
   },
   "license": "MIT",
   "main": "main.js",
@@ -16,7 +17,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@iobroker/adapter-core": "^3.3.2"
+    "@iobroker/adapter-core": "^3.4.3"
   },
   "homepage": "https://github.com/ZockerFloh7/ioBroker.winctrl",
   "repository": {
@@ -37,17 +38,16 @@
     "node": ">=22.19.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^5.0.0",
-    "@alcalzone/release-script-plugin-iobroker": "^4.0.0",
-    "@alcalzone/release-script-plugin-license": "^4.0.0",
-    "@alcalzone/release-script-plugin-manual-review": "^4.0.0",
+    "@alcalzone/release-script": "^5.2.1",
+    "@alcalzone/release-script-plugin-iobroker": "^5.2.0",
+    "@alcalzone/release-script-plugin-license": "^5.2.2",
+    "@alcalzone/release-script-plugin-manual-review": "^5.2.0",
     "@iobroker/adapter-dev": "^1.5.0",
     "@iobroker/eslint-config": "^2.2.0",
-    "@iobroker/testing": "6.3.2",
-    "@tsconfig/node20": "^20.1.8",
+    "@iobroker/testing": "^6.3.2",
+    "@tsconfig/node22": "^22.0.0",
     "@types/iobroker": "npm:@iobroker/types@^7.1.0",
-    "@types/node": "^20.19.27",
-    "mocha": "12.0.3",
+    "@types/node": "^22.0.0",
     "typescript": "~5.9.3"
   },
   "scripts": {
