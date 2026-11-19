@@ -168,6 +168,11 @@ See the repository's issue tracker for bug reports. Never include tokens in repo
 
 ## Changelog
 
+### 0.0.4
+
+- (ZockerFloh7) Updated dependencies, metadata and CI configuration for ioBroker repository submission.
+- (ZockerFloh7) Configured npm trusted publishing.
+
 ### 0.0.3 — public test release
 
 - Token-authenticated HTTP action requests.
