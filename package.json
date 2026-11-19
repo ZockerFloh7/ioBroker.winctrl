@@ -1,6 +1,6 @@
 {
   "name": "iobroker.winctrl",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Control Windows PCs through a local WinCtrl companion application",
   "author": {
     "name": "ZockerFloh7",

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "winctrl",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "news": {
+      "0.0.4": {
+        "en": "Prepare adapter for ioBroker latest repository and trusted publishing",
+        "de": "Adapter fuer ioBroker latest-Repository und Trusted Publishing vorbereitet",
+        "ru": "Подготовка адаптера к репозиторию ioBroker latest и trusted publishing",
+        "pt": "Preparacao do adaptador para o repositorio latest do ioBroker e trusted publishing",
+        "nl": "Adapter voorbereid voor ioBroker latest-repository en trusted publishing",
+        "fr": "Preparation de l'adaptateur pour le depot ioBroker latest et trusted publishing",
+        "it": "Preparazione dell'adattatore per il repository ioBroker latest e trusted publishing",
+        "es": "Preparacion del adaptador para el repositorio latest de ioBroker y trusted publishing",
+        "pl": "Przygotowanie adaptera do repozytorium ioBroker latest i trusted publishing",
+        "uk": "Підготовка адаптера до репозиторію ioBroker latest і trusted publishing",
+        "zh-cn": "为 ioBroker latest 仓库和可信发布准备适配器"
+      },
       "0.0.3": {
         "en": "Token, execution status, return values and connection monitoring",
         "de": "Token, Ausführungsstatus, Rückgabewerte und Verbindungsprüfung",
