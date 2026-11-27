@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "winctrl",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "news": {
+      "0.0.5": {
+        "en": "Translate state names, descriptions and log messages to English; move development notes to DEVELOPMENT.md",
+        "de": "Datenpunktnamen, Beschreibungen und Logmeldungen ins Englische übersetzt; Entwicklungshinweise nach DEVELOPMENT.md verschoben",
+        "ru": "Названия состояний, описания и сообщения журнала переведены на английский; заметки для разработчиков перенесены в DEVELOPMENT.md",
+        "pt": "Nomes de estados, descrições e mensagens de registo traduzidos para inglês; notas de desenvolvimento movidas para DEVELOPMENT.md",
+        "nl": "Statusnamen, beschrijvingen en logberichten naar het Engels vertaald; ontwikkelnotities verplaatst naar DEVELOPMENT.md",
+        "fr": "Noms des états, descriptions et messages de journal traduits en anglais ; notes de développement déplacées vers DEVELOPMENT.md",
+        "it": "Nomi degli stati, descrizioni e messaggi di log tradotti in inglese; note di sviluppo spostate in DEVELOPMENT.md",
+        "es": "Nombres de estados, descripciones y mensajes de registro traducidos al inglés; notas de desarrollo movidas a DEVELOPMENT.md",
+        "pl": "Nazwy stanów, opisy i komunikaty dziennika przetłumaczono na angielski; uwagi programistyczne przeniesiono do DEVELOPMENT.md",
+        "uk": "Назви станів, описи та повідомлення журналу перекладено англійською; нотатки для розробників перенесено до DEVELOPMENT.md",
+        "zh-cn": "状态名称、描述和日志消息已翻译为英文；开发说明已移至 DEVELOPMENT.md"
+      },
       "0.0.4": {
         "en": "Prepare adapter for ioBroker latest repository and trusted publishing",
         "de": "Adapter fuer ioBroker latest-Repository und Trusted Publishing vorbereitet",

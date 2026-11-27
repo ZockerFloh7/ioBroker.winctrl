@@ -149,24 +149,19 @@ an authenticated WinCtrl response was received.
 | Invalid JSON response | Check the host, port and compatible companion protocol; ensure the request is reaching WinCtrl. |
 | Window not found | Check the title and Windows session, or wait for the window before operating on it. |
 
-## Development and checks
+## Development
 
-```text
-npm ci
-npm run check:syntax
-npm run lint
-npm test
-npm run test:integration
-```
-
-npm test runs helper unit tests and package-file validation. The integration test currently
-uses JS-Controller 7.2.5 and checks basic adapter startup. With an empty default token,
-startup logs a configuration error and skips HTTP initialization; this smoke test does
-not validate successful command execution.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for contributor information.
 
 See the repository's issue tracker for bug reports. Never include tokens in reports.
 
 ## Changelog
+
+### 0.0.5
+
+- (ZockerFloh7) Translated state names, descriptions and log messages to English.
+- (ZockerFloh7) Moved development notes to DEVELOPMENT.md.
+- (ZockerFloh7) Fixed responsive widths in the admin configuration.
 
 ### 0.0.4
 

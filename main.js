@@ -20,16 +20,16 @@ class Winctrl extends utils.Adapter {
     async onReady() {
         const states = {
             command: {
-                name: 'Befehl / Trigger',
+                name: 'Command / trigger',
                 type: 'string',
                 role: 'text',
                 read: true,
                 write: true,
                 def: '',
-                desc: 'netflix oder /netflix, auch Pfade wie media/pause',
+                desc: 'netflix or /netflix, also paths such as media/pause',
             },
             status: {
-                name: 'Ausführungsstatus',
+                name: 'Execution status',
                 type: 'number',
                 role: 'value',
                 read: true,
@@ -40,7 +40,7 @@ class Winctrl extends utils.Adapter {
                 states: { 0: 'failed', 1: 'running', 2: 'success' },
             },
             response: {
-                name: 'Antwort / Rückgabewert',
+                name: 'Response / return value',
                 type: 'string',
                 role: 'text',
                 read: true,
@@ -48,7 +48,7 @@ class Winctrl extends utils.Adapter {
                 def: '',
             },
             httpStatus: {
-                name: 'HTTP-Statuscode (0 = keine Antwort)',
+                name: 'HTTP status code (0 = no response)',
                 type: 'number',
                 role: 'value',
                 read: true,
@@ -56,7 +56,7 @@ class Winctrl extends utils.Adapter {
                 def: 0,
             },
             lastError: {
-                name: 'Letzter Ausführungsfehler',
+                name: 'Last execution error',
                 type: 'string',
                 role: 'text',
                 read: true,
@@ -64,7 +64,7 @@ class Winctrl extends utils.Adapter {
                 def: '',
             },
             lastCommand: {
-                name: 'Zuletzt gesendeter Trigger',
+                name: 'Last trigger sent',
                 type: 'string',
                 role: 'text',
                 read: true,
@@ -72,7 +72,7 @@ class Winctrl extends utils.Adapter {
                 def: '',
             },
             'info.connection': {
-                name: 'WinCtrl erreichbar und authentifiziert',
+                name: 'Device connection to Windows PC',
                 type: 'boolean',
                 role: 'indicator.connected',
                 read: true,
@@ -80,7 +80,7 @@ class Winctrl extends utils.Adapter {
                 def: false,
             },
         };
-        await this.setObjectNotExistsAsync('info', { type: 'channel', common: { name: 'Verbindung' }, native: {} });
+        await this.setObjectNotExistsAsync('info', { type: 'channel', common: { name: 'Information' }, native: {} });
         // Update existing metadata as well: older status objects stored HTTP codes.
         for (const [id, common] of Object.entries(states)) {
             await this.extendObjectAsync(id, { type: 'state', common, native: {} });
@@ -90,15 +90,15 @@ class Winctrl extends utils.Adapter {
         if (previous && previous.val === 1) {
             await this.writeResult(
                 0,
-                'Adapter neu gestartet; Ergebnis des vorherigen Laufs unbekannt.',
+                'Adapter restarted; result of the previous run is unknown.',
                 0,
-                'Vorheriger Lauf wurde nicht bis zum Ende beobachtet.',
+                'The previous run was not observed to completion.',
             );
         }
         try {
             this.baseUrl = makeBaseUrl(this.config.clientIp, this.config.port);
             if (!String(this.config.token || '').trim()) {
-                throw new Error('Token fehlt in den Instanzeinstellungen.');
+                throw new Error('Token is missing in the instance settings.');
             }
         } catch (error) {
             this.log.error(error.message);
@@ -138,12 +138,12 @@ class Winctrl extends utils.Adapter {
             if (controller.signal.aborted) {
                 throw new Error(
                     this.stopping
-                        ? 'Adapter wird beendet.'
-                        : `Anfragezeitlimit nach ${timeoutMs / 1000} Sekunden erreicht; Windows-Ausführung möglicherweise noch aktiv.`,
+                        ? 'Adapter is stopping.'
+                        : `Request timed out after ${timeoutMs / 1000} seconds; the Windows action may still be running.`,
                 );
             }
             // Do not log URL/config/headers or nested errors containing credentials.
-            throw new Error(`WinCtrl-Anfrage fehlgeschlagen (${error.code || error.name || 'Netzwerkfehler'}).`);
+            throw new Error(`WinCtrl request failed (${error.code || error.name || 'network error'}).`);
         } finally {
             this.clearTimeout(timer);
             this.controllers.delete(controller);
@@ -183,7 +183,7 @@ class Winctrl extends utils.Adapter {
             return;
         }
         if (this.busy) {
-            this.log.warn('Weiterer Befehl nicht ausgeführt: Der vorherige Auftrag läuft noch.');
+            this.log.warn('Command not executed: the previous request is still running.');
             return;
         }
         this.busy = true;
@@ -203,7 +203,7 @@ class Winctrl extends utils.Adapter {
             const data = res.data;
             if (res.code === 401 || res.code === 403) {
                 await this.setStateAsync('info.connection', { val: false, ack: true });
-                await this.writeResult(0, 'Token wurde abgewiesen.', res.code, 'Authentifizierung fehlgeschlagen.');
+                await this.writeResult(0, 'Token was rejected.', res.code, 'Authentication failed.');
             } else if (data && [0, 1, 2].includes(data.status)) {
                 await this.setStateAsync('info.connection', { val: true, ack: true });
                 const result = interpretResponse(res);
@@ -211,9 +211,9 @@ class Winctrl extends utils.Adapter {
             } else {
                 await this.writeResult(
                     0,
-                    'Ungültige WinCtrl-Antwort (JSON erwartet).',
+                    'Invalid WinCtrl response (JSON expected).',
                     res.code,
-                    'Keine gültige Statusantwort erhalten. Windows-App und Token prüfen.',
+                    'No valid status response received. Check the Windows app and token.',
                 );
                 await this.setStateAsync('info.connection', { val: false, ack: true });
             }
@@ -233,7 +233,7 @@ class Winctrl extends utils.Adapter {
                         await this.setStateAsync('command', { val: state.val, ack: true });
                     }
                 } catch (error) {
-                    this.log.debug(`Quittierung: ${error.message}`);
+                    this.log.debug(`Acknowledgement: ${error.message}`);
                 }
             }
             this.busy = false;
@@ -256,10 +256,10 @@ function makeBaseUrl(hostValue, portValue) {
     const host = String(hostValue || '').trim();
     const port = Number(portValue || 8085);
     if (!host || /[\s/?#@]/.test(host) || host.includes('://')) {
-        throw new Error('Nur Hostname/IP ohne http:// und ohne Pfad eingeben.');
+        throw new Error('Enter only a hostname or IP address, without http:// and without a path.');
     }
     if (!Number.isInteger(port) || port < 1 || port > 65535) {
-        throw new Error('Port muss zwischen 1 und 65535 liegen.');
+        throw new Error('Port must be between 1 and 65535.');
     }
     const formatted = host.includes(':') && !host.startsWith('[') ? `[${host}]` : host;
     return new URL(`http://${formatted}:${port}/`).toString();
@@ -270,10 +270,10 @@ function normalizeTrigger(value) {
         .trim()
         .replace(/^\/+/, '')}`;
     if (!/^\/[A-Za-z0-9_/-]+$/.test(path)) {
-        throw new Error('Ungültiger Trigger; z.B. netflix oder /media/pause verwenden.');
+        throw new Error('Invalid trigger; use e.g. netflix or /media/pause.');
     }
     if (path === '/ping') {
-        throw new Error('/ping ist für Verbindungsprüfung reserviert und kein Skripttrigger.');
+        throw new Error('/ping is reserved for the connection check and is not a script trigger.');
     }
     return path;
 }
@@ -306,7 +306,7 @@ function interpretResponse(res) {
     }
     const error =
         res.code === 409 || d.status === 1
-            ? 'Windows führt bereits eine andere Aktion aus; dieser Auftrag wurde nicht gestartet.'
+            ? 'Windows is already running another action; this request was not started.'
             : String(d.error || d.response || `HTTP ${res.code}`);
     return { status: 0, response: error, error };
 }

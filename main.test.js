@@ -67,7 +67,7 @@ test('Leere, fremde URL- und Query-Trigger werden abgewiesen', () => {
     }
 });
 test('/ping ist für die Verbindungsprüfung reserviert', () => {
-    assert.throws(() => h.normalizeTrigger('/ping'), /reserviert/);
+    assert.throws(() => h.normalizeTrigger('/ping'), /reserved/);
 });
 test('Nativer Pong bestätigt die Verbindung', () => {
     assert.equal(h.isWinCtrlPing({ code: 200, data: { response: 'pong' } }), true);
@@ -106,7 +106,7 @@ test('response dient als Fallback ohne return_value', () => {
 test('HTTP 409 bedeutet: neuer Auftrag nicht gestartet', () => {
     const r = result(409, { status: 1, response: 'busy' });
     assert.equal(r.status, 0);
-    assert.match(r.error, /nicht gestartet/);
+    assert.match(r.error, /not started/);
 });
 test('Windows-Fehlertext wird übernommen', () => {
     const r = result(500, { status: 0, error: 'Fenster nicht gefunden nach 10 Sekunden' });
